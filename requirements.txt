@@ -1,0 +1,17 @@
+openai==0.28
+river
+typing-extensions
+langchain
+pandas
+chromadb 
+sentence-transformers
+
+
+# Player Name: {player_name}
+        # Team: [current team]
+        # Opponent Team: {opponent_team_name}
+        # Predicted Score: [number]
+        # Strike Rate: [number]
+        # Predicted Wickets to be taken: [number]
+        # Economy Rate: [number]
+        # Runs to be conceded: [number]

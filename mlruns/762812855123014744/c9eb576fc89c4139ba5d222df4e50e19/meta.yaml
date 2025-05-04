@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/ipl/mlruns/762812855123014744/c9eb576fc89c4139ba5d222df4e50e19/artifacts
+end_time: 1746109991947
+entry_point_name: ''
+experiment_id: '762812855123014744'
+lifecycle_stage: active
+run_id: c9eb576fc89c4139ba5d222df4e50e19
+run_name: placid-shrew-31
+run_uuid: c9eb576fc89c4139ba5d222df4e50e19
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746109973154
+status: 3
+tags: []
+user_id: Hxtreme
