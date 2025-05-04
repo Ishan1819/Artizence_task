@@ -8,6 +8,7 @@ from sklearn.metrics import (
     accuracy_score, classification_report, confusion_matrix, roc_auc_score,
     mean_absolute_error, mean_squared_error, r2_score
 )
+
 from imblearn.over_sampling import SMOTE
 # from fastapi import FastAPI
 # from pydantic import BaseModel
