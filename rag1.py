@@ -43,26 +43,26 @@
 # def ask_rag(question, top_k=3):
 #     # Get the query embedding
 #     query_embedding = embeddings.embed_query(question)  # Use embed_query for a single query
-    
+
 #     # Query the collection
 #     results = collection.query(
 #         query_embeddings=[query_embedding],  # Needs to be a list
 #         n_results=top_k
 #     )
-    
+
 #     # Process the results
 #     retrieved_texts = results['documents'][0]  # First element contains the list of documents
-    
+
 #     # Combine the retrieved documents into context
 #     context = "\n\n".join(retrieved_texts)
-    
+
 #     # Generate a prompt for the Gemini model
 #     prompt = f"""Answer the question based on the following data:
 
 # {context}
 
 # Question: {question}"""
-    
+
 #     # Get the response from Gemini
 #     response = model.generate_content(prompt)
 #     return response.text
@@ -73,7 +73,6 @@
 # print(ask_rag(query))
 
 
-
 import google.generativeai as genai
 
 # Configure the Gemini API with your key
@@ -81,6 +80,7 @@ genai.configure(api_key="AIzaSyDEuV85vMTs040I3S5U6ZbyVH4dNEtv9KA")
 
 # Create a model instance
 model = genai.GenerativeModel("gemini-1.5-flash")
+
 
 def ask_gemini(question):
     """Send a question directly to Gemini with IPL analyst prompt"""
@@ -97,21 +97,19 @@ Q: How much will Virat Kohli score today vs MI?
 A: According to the last 5 matches he played, he would score 50+ runs with a strike rate of 120.
 
 Question: {question}"""
-    
+
     # Generation configuration
     generation_config = {
         "temperature": 0.7,
         "top_p": 0.95,
         "top_k": 40,
     }
-    
+
     # Get the response from Gemini using a single prompt
-    response = model.generate_content(
-        prompt,
-        generation_config=generation_config
-    )
-    
+    response = model.generate_content(prompt, generation_config=generation_config)
+
     return response.text
+
 
 # Example usage
 # if __name__ == "__main__":

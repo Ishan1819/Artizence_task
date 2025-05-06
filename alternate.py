@@ -95,9 +95,9 @@
 #     team1_strength = team_stats.get(team1, 0.5)
 #     team2_strength = team_stats.get(team2, 0.5)
 #     strength_diff = team1_strength - team2_strength
-    
+
 #     team1_win_prob = model.predict_proba([[team1_encoded, team2_encoded, strength_diff]])[0][1]
-    
+
 #     if team1_win_prob > 0.5:
 #         predicted_winner = team1
 #         win_probability = team1_win_prob
@@ -110,7 +110,6 @@
 #     print(f"Predicted winner: {predicted_winner} with {win_probability:.2%} probability")
 # except ValueError:
 #     print(f"Error: One or both teams ({team1}, {team2}) not found in training data")
-
 
 
 # import pandas as pd
@@ -258,8 +257,6 @@
 # # }
 
 
-
-
 # ----------------------------------------------------------------------------------
 # import google.generativeai as genai
 
@@ -295,9 +292,6 @@
 # print(stats)
 
 
-
-
-
 # -----------------------------------------------------------------------------------
 # import os
 # import google.generativeai as genai
@@ -306,7 +300,7 @@
 # genai.configure(api_key="AIzaSyCYYUDOTqdhMC_NDbrQS-htFND7vocAIes")
 
 # # ✳️ Set your custom system prompt
-# system_prompt = "You are a helpful chatbot." 
+# system_prompt = "You are a helpful chatbot."
 
 # # 🌐 Initialize the Gemini model
 # model = genai.GenerativeModel(
@@ -365,11 +359,11 @@
 
 #     # Load the dataset
 #     df = pd.read_csv("D:/Ishan_ip datasets/merged_with_year.csv")
-    
+
 #     # Filter last 1 year of data
 #     current_year = datetime.now().year
 #     df = df[df["year"] >= current_year - 1]
-    
+
 #     # Drop rows with nulls in important columns
 #     df = df.dropna(subset=["team1", "team2", "winner"])
 
@@ -407,7 +401,7 @@
 #         model.learn_one(x, y)
 #         # Update metric
 #         metric.update(y, y_pred_val)
-        
+
 #         # Store values for confusion matrix
 #         y_true.append(int(y))
 #         y_pred.append(int(y_pred_val) if y_pred_val is not None else 0)  # Default to 0 if None
@@ -466,9 +460,6 @@
 # check_for_new_data()
 
 
-
-
-
 # ______________________________________________________
 
 # import pandas as pd
@@ -502,31 +493,31 @@
 #         f.write(json.dumps(example) + "\n")
 
 
-
-
 # ----------------------------------------------------
 
 import google.generativeai as genai
 from typing import Dict, Any
 
+
 def configure_gemini(api_key: str) -> None:
     """Configure the Gemini API with the provided key."""
     genai.configure(api_key="AIzaSyCYYUDOTqdhMC_NDbrQS-htFND7vocAIes")
 
+
 def get_player_stats(player_name: str, opponent_team_name: str) -> Dict[str, Any]:
     """
     Query Gemini API for cricket player statistics and predictions.
-    
+
     Args:
         player_name: Name of the cricket player
         opponent_team_name: Name of the opponent team
-        
+
     Returns:
         Dictionary containing structured player statistics
     """
     try:
         model = genai.GenerativeModel("models/gemini-1.5-flash")
-        
+
         # Create a structured prompt for consistent formatting
         prompt = f"""
         As an expert cricket analyst, provide detailed IPL statistics for '{player_name}' against '{opponent_team_name}'.
@@ -548,64 +539,66 @@ def get_player_stats(player_name: str, opponent_team_name: str) -> Dict[str, Any
         - Provide only numbers, no explanatory text
         - Use your knowledge to determine the player's current team
         """
-        
+
         # Generate response
         response = model.generate_content(prompt)
-        
+
         if not response.text:
             return {"error": "No response received from API"}
-            
+
         # Parse the response into a structured dictionary
         result = {}
-        for line in response.text.strip().split('\n'):
-            if ':' in line:
-                key, value = line.split(':', 1)
+        for line in response.text.strip().split("\n"):
+            if ":" in line:
+                key, value = line.split(":", 1)
                 result[key.strip()] = value.strip()
-                
+
         return result
-        
+
     except Exception as e:
         return {"error": f"Error getting player stats: {str(e)}"}
+
 
 def main():
     """Main function to run the program."""
     print("IPL Player Statistics Predictor\n")
-    
+
     # Use hardcoded API key
     api_key = "AIzaSyCYYUDOTqdhMC_NDbrQS-htFND7vocAIes"
-    
+
     try:
         # Configure API
         configure_gemini(api_key)
-        
+
         # Get player and opponent details
         player_name = input("\nEnter IPL player name: ").strip()
         opponent_team_name = input("Enter opponent team name: ").strip()
-        
+
         if not player_name or not opponent_team_name:
             print("Error: Player name and opponent team name cannot be empty.")
             return
-            
+
         print("\nFetching stats, please wait...\n")
-        
+
         # Get stats
         stats = get_player_stats(player_name, opponent_team_name)
-        
+
         # Check for errors
         if "error" in stats:
             print(f"Error: {stats['error']}")
             return
-            
+
         # Print results in a formatted way
         print("=" * 40)
         print(f"Statistics for {player_name}")
         print("=" * 40)
-        
+
         for key, value in stats.items():
             print(f"{key}: {value}")
-            
+
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+
 
 if __name__ == "__main__":
     main()

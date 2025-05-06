@@ -6,8 +6,8 @@ genai.configure(api_key="AIzaSyDEuV85vMTs040I3S5U6ZbyVH4dNEtv9KA")
 # Create a model instance
 model = genai.GenerativeModel("gemini-1.5-flash")
 
+
 def ask_gemini(player_name, opponent_team):
-    """Send a question directly to Gemini with IPL analyst prompt"""
     prompt = f"""
 You are an IPL analyst expert and can predict upcoming match player scores, wicket counts, and other performance metrics using data from their last 4 to 5 matches. If incase you didn't find any data and you feel like you have to admit that you didn't find any data then give something dummy but real data from the player's history and performance but don't say that you don't know or you don't have data. 
 
@@ -32,9 +32,6 @@ Against: {opponent_team}
         "top_k": 40,
     }
 
-    response = model.generate_content(
-        prompt,
-        generation_config=generation_config
-    )
+    response = model.generate_content(prompt, generation_config=generation_config)
 
     return response.text

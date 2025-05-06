@@ -13,49 +13,70 @@ model = None
 team_encoder = None
 team_stats = {}
 
+
 def train_model():
     global model, team_encoder, team_stats
 
     df = pd.read_csv("D:/Ishan_ip datasets/merged_with_year.csv")
     current_year = datetime.now().year
     cutoff_year = current_year - 1
-    df = df[df['year'] >= cutoff_year]
+    df = df[df["year"] >= cutoff_year]
 
-    team_prediction_df = df[['team1', 'team2', 'winner']].dropna()
+    team_prediction_df = df[["team1", "team2", "winner"]].dropna()
 
     team_encoder = LabelEncoder()
-    all_teams = pd.concat([team_prediction_df['team1'], team_prediction_df['team2'], team_prediction_df['winner']]).unique()
+    all_teams = pd.concat(
+        [
+            team_prediction_df["team1"],
+            team_prediction_df["team2"],
+            team_prediction_df["winner"],
+        ]
+    ).unique()
     team_encoder.fit(all_teams)
 
-    team_prediction_df['team1_encoded'] = team_encoder.transform(team_prediction_df['team1'])
-    team_prediction_df['team2_encoded'] = team_encoder.transform(team_prediction_df['team2'])
-    team_prediction_df['winner_encoded'] = team_encoder.transform(team_prediction_df['winner'])
+    team_prediction_df["team1_encoded"] = team_encoder.transform(
+        team_prediction_df["team1"]
+    )
+    team_prediction_df["team2_encoded"] = team_encoder.transform(
+        team_prediction_df["team2"]
+    )
+    team_prediction_df["winner_encoded"] = team_encoder.transform(
+        team_prediction_df["winner"]
+    )
 
-    team_prediction_df['team1_won'] = (team_prediction_df['team1'] == team_prediction_df['winner']).astype(int)
+    team_prediction_df["team1_won"] = (
+        team_prediction_df["team1"] == team_prediction_df["winner"]
+    ).astype(int)
 
     # Team strength calculation
     for team in all_teams:
-        team1_matches = team_prediction_df[team_prediction_df['team1'] == team]
-        team2_matches = team_prediction_df[team_prediction_df['team2'] == team]
-        team1_wins = sum(team1_matches['team1'] == team1_matches['winner'])
-        team2_wins = sum(team2_matches['team2'] == team2_matches['winner'])
+        team1_matches = team_prediction_df[team_prediction_df["team1"] == team]
+        team2_matches = team_prediction_df[team_prediction_df["team2"] == team]
+        team1_wins = sum(team1_matches["team1"] == team1_matches["winner"])
+        team2_wins = sum(team2_matches["team2"] == team2_matches["winner"])
         total_matches = len(team1_matches) + len(team2_matches)
-        win_pct = (team1_wins + team2_wins) / total_matches if total_matches > 0 else 0.5
+        win_pct = (
+            (team1_wins + team2_wins) / total_matches if total_matches > 0 else 0.5
+        )
         team_stats[team] = win_pct
 
-    team_prediction_df['team1_strength'] = team_prediction_df['team1'].map(team_stats)
-    team_prediction_df['team2_strength'] = team_prediction_df['team2'].map(team_stats)
-    team_prediction_df['strength_diff'] = team_prediction_df['team1_strength'] - team_prediction_df['team2_strength']
+    team_prediction_df["team1_strength"] = team_prediction_df["team1"].map(team_stats)
+    team_prediction_df["team2_strength"] = team_prediction_df["team2"].map(team_stats)
+    team_prediction_df["strength_diff"] = (
+        team_prediction_df["team1_strength"] - team_prediction_df["team2_strength"]
+    )
 
-    X = team_prediction_df[['team1_encoded', 'team2_encoded', 'strength_diff']]
-    y = team_prediction_df['team1_won']
+    X = team_prediction_df[["team1_encoded", "team2_encoded", "strength_diff"]]
+    y = team_prediction_df["team1_won"]
 
     X_train, _, y_train, _ = train_test_split(X, y, test_size=0.25, random_state=42)
 
     model = RandomForestClassifier(n_estimators=150, max_depth=7, random_state=42)
     model.fit(X_train, y_train)
 
+
 train_model()  # Run on import
+
 
 def predict_winner(team1: str, team2: str):
     try:
@@ -65,7 +86,9 @@ def predict_winner(team1: str, team2: str):
         team2_strength = team_stats.get(team2, 0.5)
         strength_diff = team1_strength - team2_strength
 
-        team1_win_prob = model.predict_proba([[team1_encoded, team2_encoded, strength_diff]])[0][1]
+        team1_win_prob = model.predict_proba(
+            [[team1_encoded, team2_encoded, strength_diff]]
+        )[0][1]
 
         if team1_win_prob > 0.5:
             predicted_winner = team1
@@ -92,4 +115,6 @@ def predict_winner(team1: str, team2: str):
         }
 
     except ValueError:
-        return {"error": f"One or both teams ({team1}, {team2}) not found in training data"}
+        return {
+            "error": f"One or both teams ({team1}, {team2}) not found in training data"
+        }

@@ -1,12 +1,12 @@
-openai==0.28
+# openai==0.28
 river
 typing-extensions
 langchain
 pandas
 chromadb 
 sentence-transformers
-
-
+imblearn
+langchain_community
 # Player Name: {player_name}
         # Team: [current team]
         # Opponent Team: {opponent_team_name}

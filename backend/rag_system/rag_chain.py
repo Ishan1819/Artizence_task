@@ -6,6 +6,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from .config import VECTOR_STORE_PATH
 
+
 def create_ipl_rag_chain():
     model = ChatOllama(model="iplguru")
 
@@ -32,23 +33,25 @@ def create_ipl_rag_chain():
     )
 
     embedding = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
-    vector_store = Chroma(persist_directory=VECTOR_STORE_PATH, embedding_function=embedding)
+    vector_store = Chroma(
+        persist_directory=VECTOR_STORE_PATH, embedding_function=embedding
+    )
 
-    retriever = vector_store.as_retriever(search_type="similarity_score_threshold", 
-                                          search_kwargs={"k": 5, "score_threshold": 0.2})
+    retriever = vector_store.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={"k": 5, "score_threshold": 0.2},
+    )
 
     document_chain = create_stuff_documents_chain(model, prompt)
-    
+
     # Create RAG chain manually using RunnablePassthrough instead of create_retrieval_chain
-    rag_chain = (
-        {"context": retriever, "input": RunnablePassthrough()}
-        | document_chain
-    )
-    
+    rag_chain = {"context": retriever, "input": RunnablePassthrough()} | document_chain
+
     return rag_chain
 
 
 rag_chain = create_ipl_rag_chain()
+
 
 def run_rag(prompt: str) -> str:
     response = rag_chain.invoke(prompt)
