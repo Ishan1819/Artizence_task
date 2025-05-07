@@ -21,7 +21,7 @@ def create_ipl_rag_chain():
         The user has predicted the following winner:
         Predicted Winner: {input}
 
-        Please provide a detailed, step-by-step explanation for this prediction, covering the following points:
+        Please provide a concise and very short points, step-by-step explanation for this prediction, covering the following points:
         - Historical performance of the two teams
         - Recent match results and any relevant trends
         - Team strengths and weaknesses based on the current form
@@ -39,7 +39,7 @@ def create_ipl_rag_chain():
 
     retriever = vector_store.as_retriever(
         search_type="similarity_score_threshold",
-        search_kwargs={"k": 5, "score_threshold": 0.2},
+        search_kwargs={"k": 5, "score_threshold": 0.5},
     )
 
     document_chain = create_stuff_documents_chain(model, prompt)

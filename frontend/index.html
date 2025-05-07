@@ -66,7 +66,7 @@
           const team1 = document.getElementById("team1").value;
           const team2 = document.getElementById("team2").value;
 
-          const response = await fetch("http://127.0.0.1:8001/predict-winner", {
+          const response = await fetch("http://127.0.0.1:8002/predict-winner", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ team1, team2 }),
@@ -113,7 +113,7 @@
 
           try {
             const response = await fetch(
-              `http://127.0.0.1:8001/predict/player-performance/?player_name=${encodeURIComponent(
+              `http://127.0.0.1:8002/predict/player-performance/?player_name=${encodeURIComponent(
                 playerName
               )}&opponent_team=${encodeURIComponent(opponentTeam)}`
             );

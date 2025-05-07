@@ -145,35 +145,44 @@ def read_root():
 
 @app.post("/predict-winner")
 def get_combined_prediction(data: MatchTeams):
-    winner_result = predict_winner(data.team1, data.team2)
-    if "error" in winner_result:
-        return winner_result
-    score_result = predict_match_score(data.team1, data.team2)
-    if winner_result["predicted_winner"] == score_result["team1"]:
-        winner_score = score_result["estimated_winner_score"]
-        loser_score = score_result["predicted_loser_score"]
-    else:
-        winner_score = score_result["estimated_winner_score"]
-        loser_score = score_result["predicted_loser_score"]
-        score_result["team1"], score_result["team2"] = score_result["team2"], score_result["team1"]
-    return {
-        "team1": data.team1,
-        "team2": data.team2,
-        "predicted_winner": winner_result["predicted_winner"],
-        "probability": winner_result["probability"],
-        "team1_strength": winner_result["team1_strength"],
-        "team2_strength": winner_result["team2_strength"],
-        "explanation": winner_result["explanation"],
-        "predicted_scores": {
-            winner_result["predicted_winner"]: int(round(winner_score)),
-            (
-                data.team1
-                if data.team1 != winner_result["predicted_winner"]
-                else data.team2
-            ): int(round(loser_score)),
-        },
-        "estimated_margin": abs(round(winner_score - loser_score)),
-    }
+    try:
+        # Call the predict_winner function
+        winner_result = predict_winner(data.team1, data.team2)
+        if "error" in winner_result:
+            return {"error": "Prediction failed", "details": winner_result}
+
+        # Call the predict_match_score function
+        score_result = predict_match_score(data.team1, data.team2)
+
+        # Ensure winner gets the higher score
+        if winner_result["predicted_winner"] == score_result["team1"]:
+            winner_score = score_result["estimated_winner_score"]
+            loser_score = score_result["predicted_loser_score"]
+        else:
+            winner_score = score_result["estimated_winner_score"]
+            loser_score = score_result["predicted_loser_score"]
+            score_result["team1"], score_result["team2"] = score_result["team2"], score_result["team1"]
+
+        return {
+            "team1": data.team1,
+            "team2": data.team2,
+            "predicted_winner": winner_result["predicted_winner"],
+            "probability": winner_result["probability"],
+            "team1_strength": winner_result["team1_strength"],
+            "team2_strength": winner_result["team2_strength"],
+            "explanation": winner_result["explanation"],
+            "predicted_scores": {
+                winner_result["predicted_winner"]: int(round(winner_score)),
+                (
+                    data.team1
+                    if data.team1 != winner_result["predicted_winner"]
+                    else data.team2
+                ): int(round(loser_score)),
+            },
+            "estimated_margin": abs(round(winner_score - loser_score)),
+        }
+    except Exception as e:
+        return {"error": "An error occurred while processing the prediction", "details": str(e)}
 
 @app.get("/predict/player-performance/")
 def get_player_prediction(player_name: str = Query(...), opponent_team: str = Query(...)):
@@ -186,4 +195,4 @@ def get_player_prediction(player_name: str = Query(...), opponent_team: str = Qu
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8001, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8002, reload=True)
