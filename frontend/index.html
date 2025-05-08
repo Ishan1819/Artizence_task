@@ -11,14 +11,41 @@
         padding: 10px;
         text-align: right;
       }
+
       .nav a {
         color: white;
         text-decoration: none;
         margin-left: 15px;
         font-weight: bold;
       }
+
       .nav a:hover {
         text-decoration: underline;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #fff;
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        display: inline-block;
+        margin-right: 8px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
       }
     </style>
   </head>
@@ -80,38 +107,53 @@
           const team1 = document.getElementById("team1").value;
           const team2 = document.getElementById("team2").value;
 
-          const response = await fetch("http://127.0.0.1:8003/predict-winner", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ team1, team2 }),
-          });
-
-          const data = await response.json();
           const resultDiv = document.getElementById("result");
           const explanationDiv = document.getElementById("explanation");
+          const predictBtn = e.target.querySelector("button");
 
-          resultDiv.innerHTML = `
-        <p><strong>Predicted Winner:</strong> ${data.predicted_winner}</p>
-        <p><strong>Team 1:</strong> ${data.team1} - ${
-            data.predicted_scores[data.team1] || 0
-          } runs</p>
-        <p><strong>Team 2:</strong> ${data.team2} - ${
-            data.predicted_scores[data.team2] || 0
-          } runs</p>
-        <p><strong>Estimated Margin:</strong> ${data.estimated_margin} runs</p>
-      `;
+          predictBtn.disabled = true;
+          predictBtn.innerHTML = `<span class="spinner"></span> Predicting...`;
 
-          explanationDiv.innerHTML = `
-        <p>${data.explanation}</p>
-        <p><strong>Team Strengths:</strong></p>
-        <ul>
-          <li>${data.team1}: ${data.team1_strength}</li>
-          <li>${data.team2}: ${data.team2_strength}</li>
-        </ul>
-        <p><strong>Win Probability:</strong> ${Math.round(
-          data.probability
-        )}%</p>
-      `;
+          resultDiv.innerHTML = "<p>Please wait...</p>";
+          explanationDiv.innerHTML = "";
+
+          try {
+            const response = await fetch(
+              "http://127.0.0.1:8003/predict-winner",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ team1, team2 }),
+              }
+            );
+
+            const data = await response.json();
+
+            resultDiv.innerHTML = `
+            <p><strong>Predicted Winner:</strong> ${data.predicted_winner}</p>
+            <p><strong>Team 1:</strong> ${data.team1} - ${
+              data.predicted_scores[data.team1] || 0
+            } runs</p>
+            <p><strong>Team 2:</strong> ${data.team2} - ${
+              data.predicted_scores[data.team2] || 0
+            } runs</p>
+            <p><strong>Estimated Margin:</strong> ${
+              data.estimated_margin
+            } runs</p>
+          `;
+
+            explanationDiv.innerHTML = `
+            <p>${data.explanation}</p>
+            <p><strong>Win Probability:</strong> ${Math.round(
+              data.probability
+            )}%</p>
+          `;
+          } catch (error) {
+            resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+          } finally {
+            predictBtn.disabled = false;
+            predictBtn.innerHTML = "Predict Winner & Score";
+          }
         });
 
       // Player Performance Prediction
@@ -122,6 +164,13 @@
           const playerName = document.getElementById("playerName").value;
           const opponentTeam = document.getElementById("opponentTeam").value;
 
+          const playerResultDiv = document.getElementById("playerResult");
+          const playerBtn = e.target.querySelector("button");
+
+          playerBtn.disabled = true;
+          playerBtn.innerHTML = `<span class="spinner"></span> Predicting...`;
+          playerResultDiv.innerHTML = "<p>Please wait...</p>";
+
           try {
             const response = await fetch(
               `http://127.0.0.1:8003/predict/player-performance/?player_name=${encodeURIComponent(
@@ -130,19 +179,19 @@
             );
             const data = await response.json();
 
-            const playerResultDiv = document.getElementById("playerResult");
             if (data.prediction) {
               playerResultDiv.innerHTML = `
-            <p><strong>Prediction for ${data.player} vs ${data.opponent}:</strong></p>
-            <p>${data.prediction}</p>
-          `;
+              <p><strong>Prediction for ${data.player} vs ${data.opponent}:</strong></p>
+              <p>${data.prediction}</p>
+            `;
             } else {
               playerResultDiv.innerHTML = `<p>Error: ${data.error}</p>`;
             }
           } catch (error) {
-            document.getElementById(
-              "playerResult"
-            ).innerHTML = `<p>Error: ${error.message}</p>`;
+            playerResultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+          } finally {
+            playerBtn.disabled = false;
+            playerBtn.innerHTML = "Predict Player Performance";
           }
         });
     </script>

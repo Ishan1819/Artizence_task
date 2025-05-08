@@ -38,10 +38,16 @@ button {
   font-size: 16px;
   border: none;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 button:hover {
   background-color: #3498db;
+}
+
+button:disabled {
+  background-color: #7f8c8d;
+  cursor: not-allowed;
 }
 
 .result,
@@ -49,4 +55,26 @@ button:hover {
   background-color: #ecf0f1;
   padding: 15px;
   border-radius: 8px;
+}
+
+/* Spinner styling */
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #004080;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
