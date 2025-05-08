@@ -6,8 +6,8 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from config import DATASET_PATH, VECTOR_STORE_PATH
-from utils import check_embeddings_status, save_embeddings_status
+from .config import DATASET_PATH, VECTOR_STORE_PATH
+from .utils import check_embeddings_status, save_embeddings_status
 import os
 
 

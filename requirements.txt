@@ -7,6 +7,8 @@ chromadb
 sentence-transformers
 imblearn
 langchain_community
+bs4
+selenium
 # Player Name: {player_name}
         # Team: [current team]
         # Opponent Team: {opponent_team_name}

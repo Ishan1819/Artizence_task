@@ -21,7 +21,7 @@ def create_ipl_rag_chain():
         The user has predicted the following winner:
         Predicted Winner: {input}
 
-        Please provide a concise and very short points, step-by-step explanation for this prediction, covering the following points:
+        Please provide a concise and very short points with 20 to 25 words only each point, step-by-step explanation for this prediction, covering the following points:
         - Historical performance of the two teams
         - Recent match results and any relevant trends
         - Team strengths and weaknesses based on the current form

@@ -2,7 +2,7 @@
 
 import json
 import os
-from config import CONFIG_FILE
+from .config import CONFIG_FILE
 
 
 def check_embeddings_status():

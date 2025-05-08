@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPL Analytics Dashboard</title>
+    <link rel="stylesheet" href="/frontend/styles.css" />
+    <style>
+      .nav {
+        background-color: #004080;
+        padding: 10px;
+        text-align: right;
+      }
+      .nav a {
+        color: white;
+        text-decoration: none;
+        margin-left: 15px;
+        font-weight: bold;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+      .graph-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .graph-container img {
+        width: 45%;
+        height: auto;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <a href="/" target="_self">Back to Main Page</a>
+    </div>
+
+    <div class="container">
+      <h1>IPL Analytics Dashboard</h1>
+
+      <div class="graph-container">
+        <img src="analytics/runs.png" alt="Most Runs Graph" />
+        <img src="analytics/most_wickets.png" alt="Most Wickets Graph" />
+        <img src="analytics/yearly_wins.png" alt="Winner by Year Graph" />
+      </div>
+    </div>
+  </body>
+</html>
