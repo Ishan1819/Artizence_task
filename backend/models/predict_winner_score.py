@@ -16,13 +16,11 @@ from sklearn.metrics import (
 
 from imblearn.over_sampling import SMOTE
 
-# from fastapi import FastAPI
-# from pydantic import BaseModel
 
 # ----------------------------------------------------------------------------
 # 1. TRAIN / PREPARE
 # ----------------------------------------------------------------------------
-df = pd.read_csv("D:/Ishan_ip datasets/merged_with_year.csv")
+df = pd.read_csv("D:/Ishan_ip datasets/merged_with_year.csv", low_memory=False)
 
 # --- Filter data for the last year (current year - 1) ---
 current_year = datetime.now().year

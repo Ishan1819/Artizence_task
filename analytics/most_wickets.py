@@ -1,101 +1,54 @@
-# import requests
-# from bs4 import BeautifulSoup
-# import re
-# import matplotlib.pyplot as plt
-
-# def is_visible_text(element):
-#     # Filter out non-visible elements
-#     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
-#         return False
-#     return True
-
-# # URL and headers to mimic a browser
-# url = "https://timesofindia.indiatimes.com/sports/cricket/ipl/stats/most-wickets"
-# headers = {
-#     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-# }
-
-# # Request and parse the page
-# response = requests.get(url, headers=headers)
-# soup = BeautifulSoup(response.text, 'html.parser')
-# text_elements = soup.find_all(string=True)
-# visible_texts = filter(is_visible_text, text_elements)
-
-# # Combine visible texts into one string
-# content = u" ".join(t.strip() for t in visible_texts if t.strip())
-
-# # Extract name and wickets using regex (TEAM[S] pattern is unique marker)
-# pattern = r"([A-Za-z\s\.]+)\s+(\d{1,3})\s+TEAM\[S\]"
-# matches = re.findall(pattern, content)
-
-# # Filter valid player names (1 to 3 words max)
-# player_wickets = []
-# for name, wickets in matches:
-#     if len(name.split()) <= 3:  # Likely a player name
-#         player_wickets.append((name.strip(), int(wickets)))
-
-# # Manually add a popular bowler's wickets (example: Lasith Malinga with 170 wickets)
-# player_wickets.append(('Yuzvendra Chahal', 219))
-
-# # Sort by wickets (Lasith Malinga always first if present)
-# player_wickets.sort(key=lambda x: (x[0] != "Yuzvendra Chahal", -x[1]))
-
-# # Split names and wickets for plotting
-# names = [player for player, _ in player_wickets]
-# wickets = [score for _, score in player_wickets]
-
-# # Plot horizontal bar chart
-# plt.figure(figsize=(12, 8))
-# plt.barh(names, wickets, color='lightgreen')
-# plt.xlabel("Wickets")
-# plt.title("Top IPL Wicket-Takers (All Time)")
-# plt.gca().invert_yaxis()  # Highest wicket-taker on top
-# plt.tight_layout()
-# plt.show()
-
-
-import requests
-from bs4 import BeautifulSoup
-import re
+import pytest
+import os
+import sys
+import matplotlib
+# Set the backend to 'Agg' to avoid the Tkinter issue
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from unittest.mock import patch
+from io import BytesIO
 
-def generate_most_wickets_plot(output_path="graphs/most_wickets.png"):
-    url = "https://timesofindia.indiatimes.com/sports/cricket/ipl/stats/most-wickets"
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    texts = soup.find_all(string=True)
+# Add the directory containing your 'analytics' module to the system path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-    def is_visible_text(element):
-        return element.parent.name not in ['style', 'script', 'head', 'title', 'meta', '[document]']
+# Assuming generate_most_wickets_plot is imported from your script
+from analytics.most_wickets import generate_most_wickets_plot
 
-    visible_texts = filter(is_visible_text, texts)
-    content = u" ".join(t.strip() for t in visible_texts if t.strip())
+# Mocked response content for the test
+mocked_html_content = """
+<html>
+    <body>
+        <div class="stats">
+            <span>Yuzvendra Chahal 219 TEAM[S]</span>
+            <span>Lasith Malinga 170 TEAM[S]</span>
+            <span>Ravichandran Ashwin 150 TEAM[S]</span>
+        </div>
+    </body>
+</html>
+"""
 
-    pattern = r"([A-Za-z\s\.]+)\s+(\d{1,3})\s+TEAM\[S\]"
-    matches = re.findall(pattern, content)
+@pytest.fixture
+def mock_request_get():
+    with patch('requests.get') as mock_get:
+        mock_get.return_value.text = mocked_html_content
+        yield mock_get
 
-    player_wickets = []
-    for name, wickets in matches:
-        if len(name.split()) <= 3:
-            player_wickets.append((name.strip(), int(wickets)))
+def test_generate_most_wickets_plot(mock_request_get):
+    output_path = "tests/test_graphs/wickets_test.png"
+    
+    # Ensure the output directory exists
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    
+    # Call the function to generate the plot
+    generate_most_wickets_plot(output_path)
 
-    player_wickets.append(('Yuzvendra Chahal', 219))
-    player_wickets.sort(key=lambda x: (x[0] != "Yuzvendra Chahal", -x[1]))
+    # Check if the plot is created
+    assert os.path.exists(output_path), f"Plot was not created at {output_path}"
 
-    names = [player for player, _ in player_wickets]
-    wickets = [score for _, score in player_wickets]
+    # Check if the generated file is a valid image
+    with open(output_path, "rb") as f:
+        image_data = f.read()
+        assert image_data[:4] == b'\x89PNG', "Generated file is not a valid PNG image"
 
-    plt.figure(figsize=(12, 8))
-    plt.barh(names, wickets, color='lightgreen')
-    plt.xlabel("Wickets")
-    plt.title("Top IPL Wicket-Takers (All Time)")
-    plt.gca().invert_yaxis()
-    plt.tight_layout()
-    plt.savefig(output_path)
-    plt.close()
-
-
-generate_most_wickets_plot()
+    # Cleanup after test
+    os.remove(output_path)

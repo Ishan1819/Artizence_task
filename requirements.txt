@@ -1,19 +1,18 @@
-# openai==0.28
+fastapi
+uvicorn
+pydantic
+scikit-learn
+Numpy
 river
 typing-extensions
 langchain
 pandas
-chromadb 
+chromadb
 sentence-transformers
 imblearn
 langchain_community
 bs4
 selenium
-# Player Name: {player_name}
-        # Team: [current team]
-        # Opponent Team: {opponent_team_name}
-        # Predicted Score: [number]
-        # Strike Rate: [number]
-        # Predicted Wickets to be taken: [number]
-        # Economy Rate: [number]
-        # Runs to be conceded: [number]
+langchain-ollama
+langchain-huggingface
+langchain-chroma

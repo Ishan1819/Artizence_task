@@ -44,7 +44,6 @@ def create_ipl_rag_chain():
 
     document_chain = create_stuff_documents_chain(model, prompt)
 
-    # Create RAG chain manually using RunnablePassthrough instead of create_retrieval_chain
     rag_chain = {"context": retriever, "input": RunnablePassthrough()} | document_chain
 
     return rag_chain

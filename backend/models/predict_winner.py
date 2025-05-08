@@ -6,9 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime
-from backend.rag_system.rag_chain import run_rag  # Import the RAG function
+from backend.rag_system.rag_chain import run_rag  
 
-# Global objects so model is trained only once
 model = None
 team_encoder = None
 team_stats = {}
@@ -48,7 +47,6 @@ def train_model():
         team_prediction_df["team1"] == team_prediction_df["winner"]
     ).astype(int)
 
-    # Team strength calculation
     for team in all_teams:
         team1_matches = team_prediction_df[team_prediction_df["team1"] == team]
         team2_matches = team_prediction_df[team_prediction_df["team2"] == team]
@@ -75,7 +73,7 @@ def train_model():
     model.fit(X_train, y_train)
 
 
-train_model()  # Run on import
+train_model() 
 
 
 def predict_winner(team1: str, team2: str):

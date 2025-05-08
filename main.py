@@ -11,10 +11,9 @@ from backend.models.predict_winner_score import predict_match_score
 from backend.models.predict_winner import predict_winner
 from backend.models.predict_player_stats import ask_gemini
 
-# Initialize FastAPI app
 app = FastAPI()
 
-# Serve frontend files (HTML, CSS, JS)
+
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 # Serve static image files (analytics plots)
@@ -88,8 +87,6 @@ def get_player_prediction(player_name: str = Query(...), opponent_team: str = Qu
     except Exception as e:
         return {"error": str(e)}
 
-# Analytics dashboard
-# Run with: uvicorn main:app --reload --port 8000
 
 
 if __name__ == "__main__":
